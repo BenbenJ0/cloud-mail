@@ -198,6 +198,7 @@ const publicService = {
 			throw new BizError(t('emailIdsEmpty'));
 		}
 		emailIds = emailIds.split(',').map(Number);
+		console.log(emailIds)
 		if (emailIds.some(id => isNaN(id))) {
 			throw new BizError(t('emailIdsInvalid'));
 		}
