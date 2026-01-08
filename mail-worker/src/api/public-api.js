@@ -16,3 +16,9 @@ app.post('/public/addUser', async (c) => {
 	await publicService.addUser(c, await c.req.json());
 	return c.json(result.ok());
 });
+
+app.post('/public/deleteEmail', async(c) =>{
+	await publicService.deleteEmail(c, await c.req.json());
+	return c.json(result.ok());
+}
+);

@@ -14,6 +14,9 @@ import { isDel, roleConst } from '../const/entity-const';
 import email from '../entity/email';
 import userService from './user-service';
 import KvConst from '../const/kv-const';
+import attService from './att-service';
+import starService from './star-service';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 
 const publicService = {
 
@@ -188,7 +191,25 @@ const publicService = {
 		if (!await cryptoUtils.verifyPassword(password, userRow.salt, userRow.password)) {
 			throw new BizError(t('IncorrectPwd'));
 		}
-	}
+	},
+
+	async deleteEmail(c, params) {
+		let { emailIds } = params;
+		if (!emailIds) {
+			throw new BizError(t('emailIdsEmpty'));
+		}
+		emailIds = emailIds.split(',').map(Number);
+		if (emailIds.some(id => isNaN(id))) {
+			throw new BizError(t('emailIdsInvalid'));
+		}
+		try {
+			await attService.removeByEmailIds(c, emailIds);
+			await starService.removeByEmailIds(c, emailIds);
+			await orm(c).delete(email).where(inArray(email.emailId, emailIds)).run();
+		} catch (error) {
+			throw new BizError(t('deleteEmailFailed'), 500);
+		}
+	},
 
 }
 
